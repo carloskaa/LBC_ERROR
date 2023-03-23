@@ -13,7 +13,7 @@ from datetime import timedelta
 
 inputs = pd.read_excel('Datos_LBC.xlsx',sheet_name='festivos')
 festivos = inputs['Fecha'].tolist()
-df_pruebas =  pd.read_excel(r'C:\Users\Asus\OneDrive - julia-rd.com.co\Direccion MEM\Operacion_MEM\06. RESULTADOS_PRUEBAS\Consolidado_PRUEBAS.xlsx')
+df_pruebas =  pd.read_excel('Consolidado_PRUEBAS.xlsx')
 df_pruebas['desconexion'] = 1
 df_pruebas = df_pruebas[['FronteraID','FechaOperacion','desconexion']]
 
