@@ -28,7 +28,7 @@ def fun(num):
     if num in festivos:
         return 'Festivo'
 def Depuracion_datos (df,nomb):
-    df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%m/%d/%Y',errors='coerce')
+    df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%d/%m/%Y',errors='coerce')
     df_pruebas2 = df_pruebas[df_pruebas['FronteraID'] == nomb]
     df = df.merge(df_pruebas2,left_on='Fecha Observación', right_on='FechaOperacion', how='left')
     df.drop(columns=['FechaOperacion','FronteraID'], inplace=True)
@@ -88,7 +88,7 @@ def reemplazar_ceros (df): ###REEMPLAZAR CEROS CON PROMEDIO MOVIL (si el codgio 
         val = dff['Demanda DDV'].tolist()
         dff2 = df[df['Tipo_dia']==fildias].sort_values(by=['Fecha Observación']).reset_index()
         if 0 in val:
-            df_ceros = dff.index[(dff['Demanda DDV']==0) & (df['desconexion']!=1)]
+            df_ceros = dff.index[(dff['Demanda DDV']==0) & (dff['desconexion']!=1)]
             delv = []
             for z in range(len(df_ceros)):
                 a=df_ceros[z]
@@ -184,7 +184,6 @@ def eliminacion_atipicos (df): ###ELIMINACION ATIPICOS (si el codgio aun no da i
     
         iqr = q_75-q_25
         dff['Atipico'] = np.where((dff['desconexion']!=1) & ((dff['Demanda DDV'] < q_25-1.5*iqr) | (dff['Demanda DDV'] > q_75+1.5*iqr)), 1,0)
-        
         dff = dff.drop(['level_0'], axis=1)
         val = dff['Atipico'].tolist()
         if 1 in val:
@@ -376,7 +375,7 @@ def main_error(ls_df,ls_nombres):
         nomb = ls_nombres[i]
         df = Depuracion_datos(df,nomb)  ###AGREGAR TIPO DIA NUEVA RESOLUCION Y LIMITAR MUESTRA A 60 DIA
         df['Tipo_dia'] = df['Dia_semana'].apply(Tipo_dia) ##TIPO DIAS
-        df2 = conteo_dias(df)
+        # df2 = conteo_dias(df)
         df = conteo_dias(df) ###CONTAR CUANTOS DIAS HAY POR DIA TIPO
         df = reemplazar_ceros(df)  ###REEMPLAZAR CEROS CON PROMEDIO MOVIL
         df = Maximo_total(df) ###SACAR MAXIMO EXCEPTO PARA FESTIVO
@@ -385,17 +384,17 @@ def main_error(ls_df,ls_nombres):
         df = transformacion_desconexiones(df) ###ELIMINACION ATIPICOS
         df.drop(columns=['ds', 'ds2','Unnamed: 0','Demanda Diaria por Frontera'], inplace=True)
         lbc = pd.pivot_table(data=df,index=['Tipo_dia'],values=['Demanda DDV'],aggfunc='mean')
-        conteo = pd.pivot_table(data=df2, index=['Tipo_dia'], values='conteo',aggfunc='count')
-        sum_dia = pd.pivot_table(data=df2, index=['Tipo_dia'], values='Demanda DDV',aggfunc='sum')
+        conteo = pd.pivot_table(data=df, index=['Tipo_dia'], values='conteo',aggfunc='count')
+        sum_dia = pd.pivot_table(data=df, index=['Tipo_dia'], values='Demanda DDV',aggfunc='sum')
         sum_dia = sum_dia.rename(columns={'Demanda DDV': 'Sum Ci',})
         lbc = pd.merge(lbc, conteo, left_index=True, right_index=True)
         lbc = pd.merge(lbc, sum_dia, left_index=True, right_index=True)
         lbc = lbc.rename(columns={'conteo': 'Conteo'})
         lbc['1/n'] =lbc['Conteo'].apply(lambda x: 1/x)
         lbc = lbc.rename(columns={'Demanda DDV': 'LBC estimada'})
-        df2 = df2.merge(lbc[['LBC estimada']],left_on='Tipo_dia', right_index=True, how='left')
-        df2['(LBC - Ci)^2'] = (df2['LBC estimada']-df2['Demanda DDV'])**2
-        sum_lbc_ci = pd.pivot_table(data=df2, index=['Tipo_dia'], values='(LBC - Ci)^2',aggfunc='sum')
+        df = df.merge(lbc[['LBC estimada']],left_on='Tipo_dia', right_index=True, how='left')
+        df['(LBC - Ci)^2'] = (df['LBC estimada']-df['Demanda DDV'])**2
+        sum_lbc_ci = pd.pivot_table(data=df, index=['Tipo_dia'], values='(LBC - Ci)^2',aggfunc='sum')
         sum_lbc_ci = sum_lbc_ci.rename(columns={'(LBC - Ci)^2': 'sum (LBC - Ci)^2'})
         lbc = pd.merge(lbc, sum_lbc_ci, left_index=True, right_index=True)
         lbc['Error RRMSE %'] = (((lbc['1/n']*lbc['sum (LBC - Ci)^2'])**0.5)/(lbc['1/n']*lbc['Sum Ci']))*100
