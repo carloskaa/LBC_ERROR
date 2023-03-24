@@ -45,7 +45,7 @@ def fun(num):
     if num in festivos:
         return 'Festivo'
 def Depuracion_datos (df,nomb):
-    df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%d/%m/%Y',errors='coerce')
+    df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%m/%d/%Y',errors='coerce')
     df_pruebas2 = df_pruebas[df_pruebas['FronteraID'] == nomb]
     df = df.merge(df_pruebas2,left_on='Fecha Observación', right_on='FechaOperacion', how='left')
     df.drop(columns=['FechaOperacion','FronteraID'], inplace=True)
