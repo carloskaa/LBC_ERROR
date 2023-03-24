@@ -20,10 +20,27 @@ df_pruebas = df_pruebas[['FronteraID','FechaOperacion','desconexion']]
 
 ls_df = []
 ls_nombres = []
-for f in glob.glob("Matrices/*.xlsx"):   ###LECTURA MATRICES DE CONSUMO ACTUALES
-    ls_df.append(pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1))
-    ls_nombres.append(f[25:33])
 
+
+# Crea una versión modificada de la función _cast_number
+import openpyxl.worksheet._reader as reader
+def my_cast_number(value):
+    "Convert numbers as string to an int or float"
+    try:
+        if "." in value or "E" in value or "e" in value:
+            return float(value)
+        return int(value)
+    except:
+        return value
+reader._cast_number = my_cast_number
+
+for f in glob.glob("Matrices/*.xlsx"):   ###LECTURA MATRICES DE CONSUMO ACTUALES
+    # ls_df.append(pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1, converters={'mi_columna': _cast_number_modified}))
+    ls_df.append(pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1))
+    df=pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1)
+    df.to_excel('rt.xlsx')
+    ls_nombres.append(f[25:33])
+    
 def fun(num):
     if num in festivos:
         return 'Festivo'
