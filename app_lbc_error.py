@@ -11,7 +11,7 @@ import streamlit as st
 import numpy as np
 from XM_LBC_VERSION_FINAL import crear_excel_salida
 from XM_LBC_VERSION_FINAL import main_error
-
+from openpyxl import *
 st.title("APLICACION MARGEN DE ERROR")
 uploaded_file = st.file_uploader("Seleccione un archivo .zip", type="zip")
 val = 0
