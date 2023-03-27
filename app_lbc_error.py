@@ -11,7 +11,7 @@ import streamlit as st
 import numpy as np
 from XM_LBC_VERSION_FINAL import crear_excel_salida
 from XM_LBC_VERSION_FINAL import main_error
-from openpyxl import *
+import io
 st.title("APLICACION MARGEN DE ERROR")
 uploaded_file = st.file_uploader("Seleccione un archivo .zip", type="zip")
 val = 0
@@ -32,10 +32,12 @@ if uploaded_file is not None:
         val =1
 
 def generar_boton_descarga():
+    output = io.BytesIO()
     with open('LBC_Y_ERROR.xlsx', 'rb') as archivo:
         contenido = archivo.read()
-        nombre_archivo = 'LBC_Y_ERROR.xlsx'
-    st.download_button(label='Descargar archivo', data=contenido, file_name=nombre_archivo, mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    output.write(contenido)
+    output.seek(0)
+    st.download_button(label='Descargar archivo', data=output, file_name='LBC_Y_ERROR.xlsx', mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 if val == 1:
     st.success('Calculo realizado correctamente')
@@ -48,7 +50,6 @@ if val2 == 1:
             st.dataframe(i)
         crear_excel_salida(lbcs,ls_nombres)
         generar_boton_descarga()
-
 
 
 

@@ -17,10 +17,8 @@ df_pruebas =  pd.read_excel('Consolidado_PRUEBAS.xlsx')
 df_pruebas['desconexion'] = 1
 df_pruebas = df_pruebas[['FronteraID','FechaOperacion','desconexion']]
 
-
 ls_df = []
 ls_nombres = []
-
 
 # Crea una versión modificada de la función _cast_number
 import openpyxl.worksheet._reader as reader
