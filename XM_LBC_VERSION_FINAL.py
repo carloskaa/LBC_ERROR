@@ -35,15 +35,14 @@ reader._cast_number = my_cast_number
 for f in glob.glob("Matrices/*.xlsx"):   ###LECTURA MATRICES DE CONSUMO ACTUALES
     # ls_df.append(pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1, converters={'mi_columna': _cast_number_modified}))
     ls_df.append(pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1))
-    df=pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1)
-    df.to_excel('rt.xlsx')
+    # df=pd.read_excel(f, sheet_name='Datos',skiprows=6,header=1)
     ls_nombres.append(f[25:33])
     
 def fun(num):
     if num in festivos:
         return 'Festivo'
 def Depuracion_datos (df,nomb):
-    df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%m/%d/%Y',errors='coerce')
+    # df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%d/%m/%Y',errors='coerce')
     df_pruebas2 = df_pruebas[df_pruebas['FronteraID'] == nomb]
     df = df.merge(df_pruebas2,left_on='Fecha Observación', right_on='FechaOperacion', how='left')
     df.drop(columns=['FechaOperacion','FronteraID'], inplace=True)
