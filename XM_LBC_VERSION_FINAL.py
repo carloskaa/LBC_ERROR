@@ -44,9 +44,12 @@ def fun(num):
 def Depuracion_datos (df,nomb):
     # df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'],format='%d/%m/%Y',errors='coerce')
     df_pruebas2 = df_pruebas[df_pruebas['FronteraID'] == nomb]
+    # df['Fecha Observación'] = pd.to_datetime(df['Fecha Observación'])
     df = df.merge(df_pruebas2,left_on='Fecha Observación', right_on='FechaOperacion', how='left')
     df.drop(columns=['FechaOperacion','FronteraID'], inplace=True)
+    fron_come = len(df['Código Frontera'].unique())
     df = df.groupby('Fecha Observación').sum()  ###SUMAR CONSUMOS DE VARIOS PREDIOS
+    df['desconexion'] = df['desconexion']/fron_come
     df = df.reset_index()
     df['ds']=df['Fecha Observación'].dt.day_name() ##COLOCAR TIPO DE DIA LUNES-DOMINGO
     df['ds2'] = df['Fecha Observación'].apply(fun) ##AGREGAR FESTIVOS
